@@ -1,0 +1,8 @@
+.container {
+  max-width: 970px;
+  margin: 0 auto;
+}
+
+.container .todo-header {
+  border-bottom: 1px solid #ddd;
+}
