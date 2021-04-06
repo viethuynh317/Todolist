@@ -6,3 +6,11 @@
 .container .todo-header {
   border-bottom: 1px solid #ddd;
 }
+
+.container .todo-header h1 {
+  font-size: 2.3rem;
+  text-transform: capitalize;
+  font-weight: 450;
+  text-align: center;
+  margin: 1rem 0;
+}
