@@ -1,21 +1,21 @@
-import React from 'react'
-import './Todo.css'
-import PropTypes from 'prop-types'
-import TodoHeaderAction from './components/TodoHeaderAction/TodoHeaderAction'
+/* eslint-disable react/jsx-filename-extension */
+import React from "react";
+import TodoHeaderAction from "./components/TodoHeaderAction/TodoHeaderAction";
+import "./Todo.css";
 
-const Todo = props => {
-  return (
-    <div className="container" >
-      <div className="todo-header">
-        <h1>Quản lý công việc</h1>
-      </div>
-      <TodoHeaderAction />
+const Todo = () => (
+  <div className="container">
+    <div className="todo-header">
+      <h1>Quản lý công việc</h1>
     </div>
-  )
-}
 
-Todo.propTypes = {
+    <TodoHeaderAction />
+    {/* --- Test --- */}
+    {/* <TodoForm /> */}
+    {/* --- Test --- */}
+  </div>
+);
 
-}
+Todo.propTypes = {};
 
-export default Todo
+export default Todo;

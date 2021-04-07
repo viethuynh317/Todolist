@@ -1,6 +1,7 @@
-import React from 'react';
-import './App.css';
-import Todo from './features/Todo/Todo';
+/* eslint-disable react/jsx-filename-extension */
+import React from "react";
+import "./App.css";
+import Todo from "./features/Todo/Todo";
 
 function App() {
   return (
