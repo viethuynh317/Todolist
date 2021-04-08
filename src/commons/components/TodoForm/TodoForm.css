@@ -51,13 +51,30 @@
 }
 
 .form-btn button {
-  margin: 0 1rem;
+  margin: 0 0.2rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.btn-danger {
-  background-color: rgb(245, 66, 35);
-  color: #fff;
+@media screen and (max-width: 786px) {
+  .form-btn-left {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-btn-left button {
+    justify-content: center;
+    margin-bottom: 0.3rem;
+  }
+
+  .btn-primary-res {
+    padding: 6px 7px;
+  }
+}
+
+@media screen and (max-width: 460px) {
+  .btn {
+    font-size: 0.7rem;
+  }
 }
