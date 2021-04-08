@@ -1,0 +1,74 @@
+table {
+  width: 100%;
+}
+.todo-table {
+  width: 100%;
+  font-size: 15px;
+}
+
+.todo-table table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.todo-table table > thead > tr > th,
+.todo-table table > tbody > tr > td {
+  border: 1px solid #ddd;
+  padding: 0.5rem 0.8rem;
+}
+
+td .form-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+td .form-btn .btn {
+  margin: 0 0.2rem;
+}
+
+td .trigger-status {
+  text-align: center;
+  cursor: pointer;
+}
+
+td .hidden-status {
+  text-align: center;
+  cursor: pointer;
+}
+
+td .trigger-status span {
+  background-color: #d9534f;
+  color: #fff;
+  border-color: #d43f3a;
+  border-radius: 5px;
+  padding: 3px 4px;
+  font-size: 0.6rem;
+  text-align: center;
+}
+
+td .hidden-status span {
+  background-color: #337ab7;
+  color: #fff;
+  border-color: #2e6da4;
+  border-radius: 5px;
+  padding: 3px 4px;
+  font-size: 0.6rem;
+  text-align: center;
+}
+
+@media screen and (max-width: 786px) {
+  td .form-btn.form-btn-respon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  td .form-btn.form-btn-respon .btn {
+    padding: 4px 10px;
+    margin-bottom: 0.3rem;
+  }
+}

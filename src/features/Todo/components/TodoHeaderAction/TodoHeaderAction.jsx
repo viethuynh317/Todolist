@@ -10,11 +10,16 @@ import {
   faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import Proptypes from "prop-types";
 import React, {useState} from "react";
 import "./TodoHeader.css";
 
-const TodoHeaderAction = () => {
+const TodoHeaderAction = (props) => {
+  const {onAddClick, preValueForm} = props;
   const [isShowSortList, setIsShowSortList] = useState(false);
+
+  // const [isShowAddForm, setIsShowAddForm] = useState(false);
+
   const handleShowSortList = () => {
     setIsShowSortList(!isShowSortList);
   };
@@ -54,10 +59,16 @@ const TodoHeaderAction = () => {
     handleActiveCheck(3);
   };
 
+  const handleAddClick = () => {
+    if (preValueForm === 2) onAddClick(1);
+    else if (preValueForm === 0) onAddClick(1);
+    else onAddClick(0);
+  };
+
   return (
     <div className="header-action">
       <div className="btn-wrap btn-add">
-        <button className="btn btn-primary" type="button">
+        <button className="btn btn-primary" type="button" onClick={handleAddClick}>
           <FontAwesomeIcon icon={faPlus} />
           <span>Thêm Công Việc</span>
         </button>
@@ -120,6 +131,9 @@ const TodoHeaderAction = () => {
   );
 };
 
-TodoHeaderAction.propTypes = {};
+TodoHeaderAction.propTypes = {
+  onAddClick: Proptypes.func.isRequired,
+  preValueForm: Proptypes.number.isRequired,
+};
 
 export default TodoHeaderAction;

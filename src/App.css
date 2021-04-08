@@ -3,3 +3,54 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+/* ---Use global---  */
+.btn {
+  border-color: #2e6da4;
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-bottom: 0;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  vertical-align: middle;
+  touch-action: manipulation;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+/* ---Use global---  */
+/* ---Use global---  */
+.form-control {
+  margin-bottom: 0;
+  height: 35px;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid #ccc;
+  color: #555;
+  font-size: 14px;
+  padding-left: 12px;
+  padding-right: 12px;
+  width: 100%;
+}
+/* ---Use global---  */
+
+.btn-primary {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+  color: #fff;
+}
+
+.btn-warning {
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
