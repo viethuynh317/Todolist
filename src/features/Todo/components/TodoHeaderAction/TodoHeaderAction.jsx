@@ -1,6 +1,3 @@
-/* eslint-disable react/jsx-filename-extension */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import {
   faCaretDown,
   faCheck,
@@ -10,52 +7,76 @@ import {
   faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import Proptypes from "prop-types";
+import PropTypes from "prop-types";
 import React, {useState} from "react";
 import "./TodoHeader.css";
 
 const TodoHeaderAction = (props) => {
-  const {onAddClick, preValueForm} = props;
+  const {
+    onAddClick,
+    preValueForm,
+    data,
+    handleSearchTodoClick,
+    handleSortTodo,
+    setStatusSortTodo,
+  } = props;
   const [isShowSortList, setIsShowSortList] = useState(false);
 
-  // const [isShowAddForm, setIsShowAddForm] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleShowSortList = () => {
     setIsShowSortList(!isShowSortList);
   };
 
-  const [activeCheck, setActiveCheck] = useState(null);
+  const [activeCheck, setActiveCheck] = useState(0);
+
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearchClick = () => {
+    handleSearchTodoClick(searchValue);
+  };
 
   const handleActiveCheck = (number) => {
+    setStatusSortTodo(number);
     setActiveCheck(number);
     setIsShowSortList(!isShowSortList);
   };
 
   const handleSortAlphaDown = () => {
-    // Hanlde sort logic here
+    const cloneData = [...data];
+    const newData = cloneData.sort((a, b) => (a.name > b.name ? 1 : -1));
 
-    // Set active icon check;
+    handleSortTodo(newData);
     handleActiveCheck(0);
   };
 
   const handleSortAlphaUp = () => {
-    // Hanlde sort logic here
+    const cloneData = [...data];
+    const newData = cloneData.sort((a, b) => (a.name < b.name ? 1 : -1));
 
-    // Set active icon check;
+    handleSortTodo(newData);
     handleActiveCheck(1);
   };
 
   const handleSortTrigger = () => {
-    // Hanlde sort logic here
+    const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
 
-    // Set active icon check;
+    const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
+
+    const newData = filterTodoTrigger.concat(filterTodoHidden);
+    handleSortTodo(newData);
     handleActiveCheck(2);
   };
 
   const handleSortHidden = () => {
-    // Hanlde sort logic here
+    const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
 
-    // Set active icon check;
+    const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
+
+    const newData = filterTodoHidden.concat(filterTodoTrigger);
+    handleSortTodo(newData);
     handleActiveCheck(3);
   };
 
@@ -79,18 +100,27 @@ const TodoHeaderAction = (props) => {
             className="form-control input-search"
             type="text"
             placeholder="Nhập từ khóa ..."
+            value={searchValue}
+            onChange={handleSearchChange}
           />
-          <button className="btn btn-primary btn-search" type="button">
+          <button
+            className="btn btn-primary btn-search"
+            type="button"
+            onClick={handleSearchClick}
+          >
             <FontAwesomeIcon icon={faSearch} />
             <span>Tìm</span>
           </button>
         </div>
-        <div className="sort-action">
+        <div className="sort-action" aria-hidden="true">
           <div className="btn-sort">
             <button
               className="btn btn-primary"
               type="button"
               onClick={handleShowSortList}
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
             >
               <span>Sắp xếp</span>
               <FontAwesomeIcon className="select-icon" icon={faCaretDown} />
@@ -98,15 +128,23 @@ const TodoHeaderAction = (props) => {
           </div>
 
           {isShowSortList && (
-            <div className="sort-list">
+            <div className="sort-list" onBlur={() => setIsShowSortList(false)}>
               <div className="sort-alpha">
-                <div className="sort sort-alphaDown" onClick={handleSortAlphaDown}>
+                <div
+                  className="sort sort-alphaDown"
+                  onClick={handleSortAlphaDown}
+                  aria-hidden="true"
+                >
                   <FontAwesomeIcon icon={faSortAlphaDown} />
                   <span>Tên A-Z</span>
                   {activeCheck === 0 && <FontAwesomeIcon icon={faCheck} />}
                 </div>
 
-                <div className="sort sort-alphaUp" onClick={handleSortAlphaUp}>
+                <div
+                  className="sort sort-alphaUp"
+                  onClick={handleSortAlphaUp}
+                  aria-hidden="true"
+                >
                   <FontAwesomeIcon icon={faSortAlphaUp} />
                   <span>Tên Z-A</span>
                   {activeCheck === 1 && <FontAwesomeIcon icon={faCheck} />}
@@ -114,11 +152,19 @@ const TodoHeaderAction = (props) => {
               </div>
 
               <div className="sort-status">
-                <div className="sort-trigger" onClick={handleSortTrigger}>
+                <div
+                  className="sort-trigger"
+                  onClick={handleSortTrigger}
+                  aria-hidden="true"
+                >
                   <span>Trạng Thái Kích Hoạt</span>
                   {activeCheck === 2 && <FontAwesomeIcon icon={faCheck} />}
                 </div>
-                <div className="sort-hidden" onClick={handleSortHidden}>
+                <div
+                  className="sort-hidden"
+                  onClick={handleSortHidden}
+                  aria-hidden="true"
+                >
                   <span>Trạng Thái Ẩn</span>
                   {activeCheck === 3 && <FontAwesomeIcon icon={faCheck} />}
                 </div>
@@ -132,8 +178,20 @@ const TodoHeaderAction = (props) => {
 };
 
 TodoHeaderAction.propTypes = {
-  onAddClick: Proptypes.func.isRequired,
-  preValueForm: Proptypes.number.isRequired,
+  onAddClick: PropTypes.func,
+  handleSearchTodoClick: PropTypes.func,
+  handleSortTodo: PropTypes.func,
+  setStatusSortTodo: PropTypes.func,
+  preValueForm: PropTypes.number.isRequired,
+  data: PropTypes.instanceOf(Array),
+};
+
+TodoHeaderAction.defaultProps = {
+  data: [],
+  onAddClick: null,
+  handleSearchTodoClick: null,
+  handleSortTodo: null,
+  setStatusSortTodo: null,
 };
 
 export default TodoHeaderAction;

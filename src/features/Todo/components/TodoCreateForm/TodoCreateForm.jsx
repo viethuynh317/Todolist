@@ -1,18 +1,29 @@
 import React from "react";
-import Proptypes from "prop-types";
+import PropTypes from "prop-types";
 import TodoForm from "../../../../commons/components/TodoForm/TodoForm";
 
 const TodoCreateForm = (props) => {
-  const {onFormClose} = props;
+  const {onFormClose, handleAddTodo, data} = props;
 
   return (
-    <TodoForm title="Thêm Công Việc" isAddTodo onFormCloseChild={onFormClose} />
-    // isAddTodo <==> isAddTodo={true}
+    <TodoForm
+      title="Thêm Công Việc"
+      isAddTodo
+      onFormCloseChild={onFormClose}
+      handleAddTodo={handleAddTodo}
+      data={data}
+    />
   );
 };
 
 TodoCreateForm.propTypes = {
-  onFormClose: Proptypes.func.isRequired,
+  onFormClose: PropTypes.func.isRequired,
+  handleAddTodo: PropTypes.func.isRequired,
+  data: PropTypes.instanceOf(Array),
+};
+
+TodoCreateForm.defaultProps = {
+  data: [],
 };
 
 export default TodoCreateForm;
