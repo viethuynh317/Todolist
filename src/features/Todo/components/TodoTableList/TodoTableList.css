@@ -48,6 +48,11 @@ td .trigger-status span {
   text-align: center;
 }
 
+td .trigger-status:hover span {
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+
 td .hidden-status span {
   background-color: #337ab7;
   color: #fff;
@@ -56,6 +61,11 @@ td .hidden-status span {
   padding: 3px 4px;
   font-size: 0.6rem;
   text-align: center;
+}
+
+td .hidden-status:hover span {
+  background-color: #286090;
+  border-color: #204d74;
 }
 
 @media screen and (max-width: 786px) {

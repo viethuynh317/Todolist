@@ -9,31 +9,67 @@ function TodoTableList(props) {
     preValueForm,
     data,
     dataFilter,
+    keySearchValue,
     handleDeleteTodo,
     handleChangeStatusTodo,
-    handleSearchTodoChange,
-    handleSortTodo,
     onFormClose,
   } = props;
 
-  const [searchValue, setSearchValue] = useState("");
+  const [filter, setFilter] = useState({
+    filterName: "",
+    filterStatus: 0,
+  });
 
-  const handleSearchChange = (e) => {
-    setSearchValue(e.target.value);
+  const handleFilterTodoChange = (e) => {
+    const {name, value} = e.target;
 
-    handleSearchTodoChange(e.target.value);
+    setFilter({
+      ...filter,
+      [name]: value,
+    });
   };
 
-  const handleChangeSortTodo = (e) => {
-    const newData = [...data];
-    if (Number(e.target.value) === 0) handleSortTodo(newData);
-    if (Number(e.target.value) === 1)
-      handleSortTodo(newData.filter((todo) => Number(todo.statusValue) === 1));
-    if (Number(e.target.value) === -1)
-      handleSortTodo(newData.filter((todo) => Number(todo.statusValue) === -1));
+  // const handleSearchChange = (e) => {
+  //   setSearchValue(e.target.value);
+
+  //   handleSearchTodoChange(e.target.value);
+  // };
+
+  // const handleChangeSortTodo = (e) => {
+  //   const newData = [...data];
+  //   if (Number(e.target.value) === 0) handleSortTodo(newData);
+  //   if (Number(e.target.value) === 1)
+  //     handleSortTodo(newData.filter((todo) => Number(todo.statusValue) === 1));
+  //   if (Number(e.target.value) === -1)
+  //     handleSortTodo(newData.filter((todo) => Number(todo.statusValue) === -1));
+  // };
+
+  let selectData = dataFilter.length ? dataFilter : data;
+
+  const {filterName, filterStatus} = filter;
+
+  const filterTodoChange = () => {
+    if (filterName) {
+      selectData = filterName
+        ? selectData.filter((todo) =>
+            todo.name.toLowerCase().includes(filterName.toLowerCase())
+          )
+        : selectData;
+    }
+
+    selectData = selectData.filter((todo) => {
+      if (Number(filterStatus) === 0) return todo;
+      return Number(todo.statusValue) === Number(filterStatus);
+    });
   };
 
-  const myData = dataFilter.length ? dataFilter : data;
+  filterTodoChange();
+
+  const myData = keySearchValue
+    ? selectData.filter((todo) =>
+        todo.name.toLowerCase().includes(keySearchValue.toLowerCase())
+      )
+    : selectData;
 
   return (
     <div className="todo-table">
@@ -53,15 +89,17 @@ function TodoTableList(props) {
               <input
                 type="text"
                 className="form-control"
-                value={searchValue}
-                onChange={handleSearchChange}
+                name="filterName"
+                value={filter.filterName}
+                onChange={handleFilterTodoChange}
               />
             </td>
             <td>
               <select
                 className="form-control"
-                name="todoStatus"
-                onChange={handleChangeSortTodo}
+                name="filterStatus"
+                value={filter.filterStatus}
+                onChange={handleFilterTodoChange}
               >
                 <option value={0}>Tất cả</option>
                 <option value={-1}>Ẩn</option>
@@ -95,9 +133,8 @@ TodoTableList.propTypes = {
   dataFilter: PropTypes.instanceOf(Array),
   handleDeleteTodo: PropTypes.func,
   handleChangeStatusTodo: PropTypes.func,
-  handleSearchTodoChange: PropTypes.func,
   onFormClose: PropTypes.func,
-  handleSortTodo: PropTypes.func,
+  keySearchValue: PropTypes.string,
 };
 
 TodoTableList.defaultProps = {
@@ -106,9 +143,8 @@ TodoTableList.defaultProps = {
   onEditClick: null,
   handleDeleteTodo: null,
   handleChangeStatusTodo: null,
-  handleSearchTodoChange: null,
   onFormClose: null,
-  handleSortTodo: null,
+  keySearchValue: "",
 };
 
 export default TodoTableList;

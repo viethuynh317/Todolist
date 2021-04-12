@@ -91,7 +91,7 @@ const TodoHeaderAction = (props) => {
       <div className="btn-wrap btn-add">
         <button className="btn btn-primary" type="button" onClick={handleAddClick}>
           <FontAwesomeIcon icon={faPlus} />
-          <span>Thêm Công Việc</span>
+          <span>Thêm công việc</span>
         </button>
       </div>
       <div className="btn-others">
