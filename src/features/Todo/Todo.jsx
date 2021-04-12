@@ -1,35 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {v4 as uuidv4} from "uuid";
 import TodoCreateForm from "./components/TodoCreateForm/TodoCreateForm";
 import TodoEditForm from "./components/TodoEditForm/TodoEditForm";
 import TodoHeaderAction from "./components/TodoHeaderAction/TodoHeaderAction";
 import TodoTableList from "./components/TodoTableList/TodoTableList";
 import "./Todo.css";
-
-const initialData = [
-  {
-    id: uuidv4(),
-    name: "Todo 1",
-    statusValue: -1,
-  },
-  {
-    id: uuidv4(),
-    name: "Todo 2",
-    statusValue: 1,
-  },
-
-  {
-    id: uuidv4(),
-    name: "Todo 3",
-    statusValue: -1,
-  },
-
-  {
-    id: uuidv4(),
-    name: "Todo 4",
-    statusValue: 1,
-  },
-];
 
 const Todo = () => {
   const [data, setData] = useState([]);
@@ -37,15 +11,15 @@ const Todo = () => {
   const [isActionTodo, setIsActionTodo] = useState(0);
   const [currentTodo, setCurrentTodo] = useState({});
 
-  const [dataSearch, setDataSearch] = useState([]);
+  const [keySearchValue, setKeySearchValue] = useState("");
 
   const [actionDependency, setActionDependency] = useState(false);
 
   const [statusSort, setStatusSort] = useState(0);
 
   useEffect(() => {
-    const localStorageData = JSON.parse(localStorage.getItem("data")) || initialData;
-    console.log(statusSort);
+    const jsonData = JSON.parse(localStorage.getItem("data"));
+    const localStorageData = jsonData;
     let defaultSortData;
     switch (statusSort) {
       case 0:
@@ -117,6 +91,8 @@ const Todo = () => {
     });
     localStorage.setItem("data", JSON.stringify(newData));
     setData(newData);
+    if (isActionTodo === 2 && currentTodo.id === newTodo.id) setCurrentTodo(newTodo);
+
     setActionDependency(!actionDependency);
   };
 
@@ -127,34 +103,12 @@ const Todo = () => {
   // Handle logic search todo
 
   const handleSearchTodoClick = (name) => {
-    const cloneData =
-      dataSearch.length === 0 ? JSON.parse(localStorage.getItem("data")) : dataSearch;
-    const newData = name
-      ? cloneData.filter((todo) => todo.name.toLowerCase().includes(name.toLowerCase()))
-      : JSON.parse(localStorage.getItem("data"));
-
-    setData(newData);
-    setDataSearch(newData);
-  };
-
-  const handleSearchTodoChange = (name) => {
-    const cloneData =
-      dataSearch.length === 0 ? JSON.parse(localStorage.getItem("data")) : dataSearch;
-    const newData = name
-      ? cloneData.filter((todo) => todo.name.toLowerCase().includes(name.toLowerCase()))
-      : JSON.parse(localStorage.getItem("data"));
-
-    setData(newData);
-    setDataSearch(newData);
+    setKeySearchValue(name);
   };
 
   const handleSortTodo = (newData) => {
     setDataFilter([]);
     setData(newData);
-  };
-
-  const handleSortTodoSecond = (newData) => {
-    setDataFilter(newData);
   };
 
   const setStatusSortTodo = (status) => {
@@ -206,10 +160,9 @@ const Todo = () => {
             onEditClick={handleEditClick}
             data={data}
             dataFilter={dataFilter}
+            keySearchValue={keySearchValue}
             handleDeleteTodo={handleDeleteTodo}
             handleChangeStatusTodo={handleChangeStatusTodo}
-            handleSearchTodoChange={handleSearchTodoChange}
-            handleSortTodo={handleSortTodoSecond}
             onFormClose={handleFormClose}
           />
         </div>

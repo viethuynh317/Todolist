@@ -35,7 +35,8 @@ const TodoForm = (props) => {
   };
 
   const handleAddTodoClick = () => {
-    const cloneData = [...data];
+    const dataLocal = JSON.parse(localStorage.getItem("data"));
+    const cloneData = [...dataLocal];
     const newTodo = {
       id: uuidv4(),
       name: todoName,
