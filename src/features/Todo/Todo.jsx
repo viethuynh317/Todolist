@@ -4,12 +4,25 @@ import TodoEditForm from "./components/TodoEditForm/TodoEditForm";
 import TodoHeaderAction from "./components/TodoHeaderAction/TodoHeaderAction";
 import TodoTableList from "./components/TodoTableList/TodoTableList";
 import "./Todo.css";
+import Toastify from "../../commons/components/Toastify";
+
+const initialData = [];
 
 const Todo = () => {
   const [data, setData] = useState([]);
-  const [dataFilter, setDataFilter] = useState([]);
+
   const [isActionTodo, setIsActionTodo] = useState(0);
   const [currentTodo, setCurrentTodo] = useState({});
+
+  const [toast, setToast] = useState({
+    type: "",
+    message: "",
+    isOpen: false,
+  });
+
+  const handleSetToast = (toastAlert) => {
+    setToast(toastAlert);
+  };
 
   const [keySearchValue, setKeySearchValue] = useState("");
 
@@ -19,7 +32,7 @@ const Todo = () => {
 
   useEffect(() => {
     const jsonData = JSON.parse(localStorage.getItem("data"));
-    const localStorageData = jsonData;
+    const localStorageData = jsonData || initialData;
     let defaultSortData;
     switch (statusSort) {
       case 0:
@@ -107,7 +120,6 @@ const Todo = () => {
   };
 
   const handleSortTodo = (newData) => {
-    setDataFilter([]);
     setData(newData);
   };
 
@@ -122,6 +134,7 @@ const Todo = () => {
       <TodoEditForm
         onFormClose={handleFormClose}
         handleUpdateTodo={handleUpdateTodo}
+        handleSetToast={handleSetToast}
         data={data}
         todo={currentTodo}
       />
@@ -129,6 +142,7 @@ const Todo = () => {
       <TodoCreateForm
         onFormClose={handleFormClose}
         handleAddTodo={handleAddTodo}
+        handleSetToast={handleSetToast}
         data={data}
       />
     );
@@ -159,14 +173,15 @@ const Todo = () => {
             preValueForm={isActionTodo}
             onEditClick={handleEditClick}
             data={data}
-            dataFilter={dataFilter}
             keySearchValue={keySearchValue}
             handleDeleteTodo={handleDeleteTodo}
             handleChangeStatusTodo={handleChangeStatusTodo}
+            handleSetToast={handleSetToast}
             onFormClose={handleFormClose}
           />
         </div>
       </div>
+      <Toastify notify={toast} setNotify={setToast} />
     </div>
   );
 };

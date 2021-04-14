@@ -9,6 +9,7 @@ import React, {useEffect, useState} from "react";
 import "./TodoForm.css";
 import PropTypes from "prop-types";
 import {v4 as uuidv4} from "uuid";
+import stringToSlug from "../../../constants/slugify";
 
 const TodoForm = (props) => {
   const {
@@ -18,6 +19,7 @@ const TodoForm = (props) => {
     data,
     handleUpdateTodo,
     handleAddTodo,
+    handleSetToast,
     todo,
   } = props;
 
@@ -35,31 +37,74 @@ const TodoForm = (props) => {
   };
 
   const handleAddTodoClick = () => {
-    const dataLocal = JSON.parse(localStorage.getItem("data"));
+    const dataLocal = JSON.parse(localStorage.getItem("data")) || [];
     const cloneData = [...dataLocal];
-    const newTodo = {
-      id: uuidv4(),
-      name: todoName,
-      statusValue,
-    };
-    cloneData.push(newTodo);
-    handleAddTodo(cloneData);
-    setTodoName("");
+    const isName = cloneData.some(
+      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(todoName)
+    );
+    if (!isName) {
+      const newTodo = {
+        id: uuidv4(),
+        name: todoName,
+        statusValue,
+      };
+      cloneData.push(newTodo);
+      handleAddTodo(cloneData);
+      handleSetToast({
+        type: "success",
+        message: `Tạo mới công việc thành công`,
+        isOpen: true,
+      });
+      setTodoName("");
+    } else {
+      handleSetToast({
+        type: "error",
+        message: `Công việc ${todoName} đã tồn tại`,
+        isOpen: true,
+      });
+    }
+
     onFormCloseChild(0);
   };
 
   const handleUpdateTodoClick = () => {
-    const cloneData = data.map((itemTodo) => {
-      if (itemTodo.id === todo.id)
-        return {
-          ...itemTodo,
-          name: todoName,
-          statusValue,
-        };
-      return itemTodo;
-    });
-    handleUpdateTodo(cloneData);
-    setTodoName("");
+    const isName = data.some(
+      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(todoName)
+    );
+
+    const prevTodo = data.find(
+      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(todoName)
+    );
+
+    const isStatus = prevTodo
+      ? Number(statusValue) === Number(prevTodo.statusValue)
+      : true;
+
+    if (!isStatus || !isName) {
+      const cloneData = data.map((itemTodo) => {
+        if (itemTodo.id === todo.id)
+          return {
+            ...itemTodo,
+            name: todoName,
+            statusValue,
+          };
+        return itemTodo;
+      });
+      handleUpdateTodo(cloneData);
+      handleSetToast({
+        type: "success",
+        message: `Cập nhật công việc ${todoName} thành công`,
+        isOpen: true,
+      });
+      setTodoName("");
+    } else {
+      handleSetToast({
+        type: "error",
+        message: `Công việc ${todoName} đã tồn tại`,
+        isOpen: true,
+      });
+    }
+
     onFormCloseChild(0);
   };
 
@@ -138,9 +183,10 @@ const TodoForm = (props) => {
 TodoForm.propTypes = {
   title: PropTypes.string.isRequired,
   isAddTodo: PropTypes.bool.isRequired,
-  onFormCloseChild: PropTypes.func.isRequired,
+  onFormCloseChild: PropTypes.func,
   handleUpdateTodo: PropTypes.func,
   handleAddTodo: PropTypes.func,
+  handleSetToast: PropTypes.func,
   data: PropTypes.instanceOf(Array),
   todo: PropTypes.instanceOf(Object),
 };
@@ -150,6 +196,8 @@ TodoForm.defaultProps = {
   todo: {},
   handleAddTodo: null,
   handleUpdateTodo: null,
+  onFormCloseChild: null,
+  handleSetToast: null,
 };
 
 export default TodoForm;

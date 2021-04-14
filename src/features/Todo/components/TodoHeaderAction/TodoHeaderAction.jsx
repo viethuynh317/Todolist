@@ -66,6 +66,7 @@ const TodoHeaderAction = (props) => {
     const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
 
     const newData = filterTodoTrigger.concat(filterTodoHidden);
+
     handleSortTodo(newData);
     handleActiveCheck(2);
   };
@@ -76,6 +77,7 @@ const TodoHeaderAction = (props) => {
     const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
 
     const newData = filterTodoHidden.concat(filterTodoTrigger);
+
     handleSortTodo(newData);
     handleActiveCheck(3);
   };
@@ -112,7 +114,10 @@ const TodoHeaderAction = (props) => {
             <span>Tìm</span>
           </button>
         </div>
-        <div className="sort-action" aria-hidden="true">
+        <div
+          className={isShowSortList ? "sort-action open" : "sort-action"}
+          aria-hidden="true"
+        >
           <div className="btn-sort">
             <button
               className="btn btn-primary"
@@ -127,50 +132,48 @@ const TodoHeaderAction = (props) => {
             </button>
           </div>
 
-          {isShowSortList && (
-            <div className="sort-list" onBlur={() => setIsShowSortList(false)}>
-              <div className="sort-alpha">
-                <div
-                  className="sort sort-alphaDown"
-                  onClick={handleSortAlphaDown}
-                  aria-hidden="true"
-                >
-                  <FontAwesomeIcon icon={faSortAlphaDown} />
-                  <span>Tên A-Z</span>
-                  {activeCheck === 0 && <FontAwesomeIcon icon={faCheck} />}
-                </div>
-
-                <div
-                  className="sort sort-alphaUp"
-                  onClick={handleSortAlphaUp}
-                  aria-hidden="true"
-                >
-                  <FontAwesomeIcon icon={faSortAlphaUp} />
-                  <span>Tên Z-A</span>
-                  {activeCheck === 1 && <FontAwesomeIcon icon={faCheck} />}
-                </div>
+          <div className="sort-list">
+            <div className="sort-alpha">
+              <div
+                className="sort sort-alphaDown"
+                onClick={handleSortAlphaDown}
+                aria-hidden="true"
+              >
+                <FontAwesomeIcon icon={faSortAlphaDown} />
+                <span>Tên A-Z</span>
+                {activeCheck === 0 && <FontAwesomeIcon icon={faCheck} />}
               </div>
 
-              <div className="sort-status">
-                <div
-                  className="sort-trigger"
-                  onClick={handleSortTrigger}
-                  aria-hidden="true"
-                >
-                  <span>Trạng Thái Kích Hoạt</span>
-                  {activeCheck === 2 && <FontAwesomeIcon icon={faCheck} />}
-                </div>
-                <div
-                  className="sort-hidden"
-                  onClick={handleSortHidden}
-                  aria-hidden="true"
-                >
-                  <span>Trạng Thái Ẩn</span>
-                  {activeCheck === 3 && <FontAwesomeIcon icon={faCheck} />}
-                </div>
+              <div
+                className="sort sort-alphaUp"
+                onClick={handleSortAlphaUp}
+                aria-hidden="true"
+              >
+                <FontAwesomeIcon icon={faSortAlphaUp} />
+                <span>Tên Z-A</span>
+                {activeCheck === 1 && <FontAwesomeIcon icon={faCheck} />}
               </div>
             </div>
-          )}
+
+            <div className="sort-status">
+              <div
+                className="sort sort-trigger"
+                onClick={handleSortTrigger}
+                aria-hidden="true"
+              >
+                <span>Trạng Thái Kích Hoạt</span>
+                {activeCheck === 2 && <FontAwesomeIcon icon={faCheck} />}
+              </div>
+              <div
+                className="sort sort-hidden"
+                onClick={handleSortHidden}
+                aria-hidden="true"
+              >
+                <span>Trạng Thái Ẩn</span>
+                {activeCheck === 3 && <FontAwesomeIcon icon={faCheck} />}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
