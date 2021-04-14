@@ -9,7 +9,6 @@ function TodoTableList(props) {
     onEditClick,
     preValueForm,
     data,
-    dataFilter,
     keySearchValue,
     handleDeleteTodo,
     handleChangeStatusTodo,
@@ -31,7 +30,7 @@ function TodoTableList(props) {
     });
   };
 
-  let selectData = dataFilter.length ? dataFilter : data;
+  let selectData = [...data];
 
   const {filterName, filterStatus} = filter;
 
@@ -118,7 +117,6 @@ TodoTableList.propTypes = {
   onEditClick: PropTypes.func,
   preValueForm: PropTypes.number.isRequired,
   data: PropTypes.instanceOf(Array),
-  dataFilter: PropTypes.instanceOf(Array),
   handleDeleteTodo: PropTypes.func,
   handleChangeStatusTodo: PropTypes.func,
   handleSetToast: PropTypes.func,
@@ -128,7 +126,6 @@ TodoTableList.propTypes = {
 
 TodoTableList.defaultProps = {
   data: [],
-  dataFilter: [],
   onEditClick: null,
   handleDeleteTodo: null,
   handleChangeStatusTodo: null,

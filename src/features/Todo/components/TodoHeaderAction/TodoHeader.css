@@ -50,7 +50,7 @@
   display: none;
 }
 
-.open .sort-list {
+.sort-list.open {
   display: block;
 }
 

@@ -132,7 +132,7 @@ const TodoHeaderAction = (props) => {
             </button>
           </div>
 
-          <div className="sort-list">
+          <div className={isShowSortList ? "sort-list open" : "sort-list"}>
             <div className="sort-alpha">
               <div
                 className="sort sort-alphaDown"
