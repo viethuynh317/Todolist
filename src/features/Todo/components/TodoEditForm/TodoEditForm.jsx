@@ -2,9 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import TodoForm from "../../../../commons/components/TodoForm/TodoForm";
 
-
 const TodoEditForm = (props) => {
-  const {onFormClose, data, handleUpdateTodo, todo} = props;
+  const {onFormClose, data, handleUpdateTodo, todo, handleSetToast} = props;
   return (
     <TodoForm
       title="Cập Nhật Công Việc"
@@ -12,21 +11,26 @@ const TodoEditForm = (props) => {
       onFormCloseChild={onFormClose}
       data={data}
       todo={todo}
+      handleSetToast={handleSetToast}
       handleUpdateTodo={handleUpdateTodo}
     />
   );
 };
 
 TodoEditForm.propTypes = {
-  onFormClose: PropTypes.func.isRequired,
-  handleUpdateTodo: PropTypes.func.isRequired,
+  onFormClose: PropTypes.func,
+  handleUpdateTodo: PropTypes.func,
+  handleSetToast: PropTypes.func,
   data: PropTypes.instanceOf(Array),
   todo: PropTypes.instanceOf(Object),
 };
 
 TodoEditForm.defaultProps = {
   data: [],
-  todo: {}
-}
+  todo: {},
+  onFormClose: null,
+  handleUpdateTodo: null,
+  handleSetToast: null,
+};
 
 export default TodoEditForm;
