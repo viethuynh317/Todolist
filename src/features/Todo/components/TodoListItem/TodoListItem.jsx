@@ -1,7 +1,27 @@
 import {faPencilAlt, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {Button, createMuiTheme, makeStyles, ThemeProvider} from "@material-ui/core";
+import {green} from "@material-ui/core/colors";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import PropTypes from "prop-types";
 import React, {useEffect, useRef} from "react";
+
+const theme = createMuiTheme({
+  status: {
+    success: green[500],
+  },
+});
+
+const useStyles = makeStyles(() => ({
+  root: {
+    color: green[500],
+  },
+  checked: {},
+}));
 
 const TodoListItem = (props) => {
   const {
@@ -12,9 +32,21 @@ const TodoListItem = (props) => {
     handleDeleteTodo,
     handleChangeStatusTodo,
     handleFormClose,
+    handleSetToast,
   } = props;
 
+  const classes = useStyles();
+
   const {name, statusValue} = todo;
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const rememberIdRef = useRef();
 
@@ -42,6 +74,11 @@ const TodoListItem = (props) => {
 
   const handleDeleteClick = (deleteTodo) => {
     handleDeleteTodo(deleteTodo);
+    handleSetToast({
+      isOpen: true,
+      message: `Xóa công việc ${todo.name} thành công`,
+      type: "success",
+    });
     handleFormClose(0);
   };
 
@@ -50,57 +87,89 @@ const TodoListItem = (props) => {
       ...todo,
       statusValue: statusValue === 1 ? -1 : 1,
     });
+    handleSetToast({
+      isOpen: true,
+      message: `Thay đổi trạng thái ${todo.name} thành công`,
+      type: "success",
+    });
   };
 
   return (
-    <tr>
-      <td>{numericalOrder}</td>
-      <td>{name}</td>
-      <td>
-        {Number(statusValue) === 1 ? (
+    <ThemeProvider theme={theme}>
+      <tr>
+        <td>{numericalOrder}</td>
+        <td>{name}</td>
+        <td>
+          {Number(statusValue) === 1 ? (
+            <div
+              className="trigger-status"
+              onClick={handleChangeStatusClick}
+              aria-hidden="true"
+            >
+              <span>Kích hoạt</span>
+            </div>
+          ) : (
+            <div
+              className="hidden-status"
+              onClick={handleChangeStatusClick}
+              aria-hidden="true"
+            >
+              <span>Ẩn</span>
+            </div>
+          )}
+        </td>
+        <td>
           <div
-            className="trigger-status"
-            onClick={handleChangeStatusClick}
-            aria-hidden="true"
+            className={
+              preValueForm ? "form-group form-btn form-btn-respon" : "form-group form-btn"
+            }
           >
-            <span>Kích hoạt</span>
-          </div>
-        ) : (
-          <div
-            className="hidden-status"
-            onClick={handleChangeStatusClick}
-            aria-hidden="true"
-          >
-            <span>Ẩn</span>
-          </div>
-        )}
-      </td>
-      <td>
-        <div
-          className={
-            preValueForm ? "form-group form-btn form-btn-respon" : "form-group form-btn"
-          }
-        >
-          <button
-            type="button"
-            className="btn btn-warning"
-            onClick={() => handleEditClick(todo)}
-          >
-            <FontAwesomeIcon icon={faPencilAlt} />
-            <span>Sửa</span>
-          </button>
+            <button
+              type="button"
+              className="btn btn-warning"
+              onClick={() => handleEditClick(todo)}
+            >
+              <FontAwesomeIcon icon={faPencilAlt} />
+              <span>Sửa</span>
+            </button>
 
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => handleDeleteClick(todo)}
-          >
-            <FontAwesomeIcon icon={faTrashAlt} />
-            <span>Xóa</span>
-          </button>
-        </div>
-      </td>
-    </tr>
+            <button type="button" className="btn btn-danger" onClick={handleClickOpen}>
+              <FontAwesomeIcon icon={faTrashAlt} />
+              <span>Xóa</span>
+            </button>
+
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                Bạn có muốn xóa công việc này?
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Công việc sẽ không hoàn tác lại sau khi xóa
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => handleDeleteClick(todo)}
+                  className={classes.root}
+                  variant="outlined"
+                  autoFocus
+                >
+                  Đồng ý
+                </Button>
+                <Button onClick={handleClose} color="secondary" variant="outlined">
+                  Hủy bỏ
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        </td>
+      </tr>
+    </ThemeProvider>
   );
 };
 
@@ -109,6 +178,7 @@ TodoListItem.propTypes = {
   handleDeleteTodo: PropTypes.func,
   handleChangeStatusTodo: PropTypes.func,
   handleFormClose: PropTypes.func,
+  handleSetToast: PropTypes.func,
   preValueForm: PropTypes.number.isRequired,
   numericalOrder: PropTypes.number.isRequired,
   todo: PropTypes.instanceOf(Object),
@@ -120,6 +190,7 @@ TodoListItem.defaultProps = {
   handleDeleteTodo: null,
   handleChangeStatusTodo: null,
   handleFormClose: null,
+  handleSetToast: null,
 };
 
 export default TodoListItem;

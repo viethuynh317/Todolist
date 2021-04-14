@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React, {useState} from "react";
+import stringToSlug from "../../../../constants/slugify";
 import TodoListItem from "../TodoListItem/TodoListItem";
 import "./TodoTableList.css";
 
@@ -8,10 +9,10 @@ function TodoTableList(props) {
     onEditClick,
     preValueForm,
     data,
-    dataFilter,
     keySearchValue,
     handleDeleteTodo,
     handleChangeStatusTodo,
+    handleSetToast,
     onFormClose,
   } = props;
 
@@ -29,22 +30,7 @@ function TodoTableList(props) {
     });
   };
 
-  // const handleSearchChange = (e) => {
-  //   setSearchValue(e.target.value);
-
-  //   handleSearchTodoChange(e.target.value);
-  // };
-
-  // const handleChangeSortTodo = (e) => {
-  //   const newData = [...data];
-  //   if (Number(e.target.value) === 0) handleSortTodo(newData);
-  //   if (Number(e.target.value) === 1)
-  //     handleSortTodo(newData.filter((todo) => Number(todo.statusValue) === 1));
-  //   if (Number(e.target.value) === -1)
-  //     handleSortTodo(newData.filter((todo) => Number(todo.statusValue) === -1));
-  // };
-
-  let selectData = dataFilter.length ? dataFilter : data;
+  let selectData = [...data];
 
   const {filterName, filterStatus} = filter;
 
@@ -52,7 +38,7 @@ function TodoTableList(props) {
     if (filterName) {
       selectData = filterName
         ? selectData.filter((todo) =>
-            todo.name.toLowerCase().includes(filterName.toLowerCase())
+            stringToSlug(todo.name).includes(stringToSlug(filterName))
           )
         : selectData;
     }
@@ -67,7 +53,7 @@ function TodoTableList(props) {
 
   const myData = keySearchValue
     ? selectData.filter((todo) =>
-        todo.name.toLowerCase().includes(keySearchValue.toLowerCase())
+        stringToSlug(todo.name).includes(stringToSlug(keySearchValue))
       )
     : selectData;
 
@@ -114,6 +100,7 @@ function TodoTableList(props) {
               handleDeleteTodo={handleDeleteTodo}
               handleChangeStatusTodo={handleChangeStatusTodo}
               handleFormClose={onFormClose}
+              handleSetToast={handleSetToast}
               preValueForm={preValueForm}
               todo={todo}
               key={todo.id}
@@ -130,19 +117,19 @@ TodoTableList.propTypes = {
   onEditClick: PropTypes.func,
   preValueForm: PropTypes.number.isRequired,
   data: PropTypes.instanceOf(Array),
-  dataFilter: PropTypes.instanceOf(Array),
   handleDeleteTodo: PropTypes.func,
   handleChangeStatusTodo: PropTypes.func,
+  handleSetToast: PropTypes.func,
   onFormClose: PropTypes.func,
   keySearchValue: PropTypes.string,
 };
 
 TodoTableList.defaultProps = {
   data: [],
-  dataFilter: [],
   onEditClick: null,
   handleDeleteTodo: null,
   handleChangeStatusTodo: null,
+  handleSetToast: null,
   onFormClose: null,
   keySearchValue: "",
 };
