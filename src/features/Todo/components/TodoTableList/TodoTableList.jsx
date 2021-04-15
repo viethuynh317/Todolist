@@ -1,5 +1,6 @@
+import _ from "lodash";
 import PropTypes from "prop-types";
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import stringToSlug from "../../../../constants/slugify";
 import TodoListItem from "../TodoListItem/TodoListItem";
 import "./TodoTableList.css";
@@ -13,6 +14,7 @@ function TodoTableList(props) {
     handleDeleteTodo,
     handleChangeStatusTodo,
     handleSetToast,
+    handleUpdateData,
     onFormClose,
   } = props;
 
@@ -21,6 +23,26 @@ function TodoTableList(props) {
     filterStatus: 0,
   });
 
+  const filterTodoChange = (myFilter, myData) => {
+    const {filterName, filterStatus} = myFilter;
+
+    let cloneData = [...myData];
+    cloneData = filterName
+      ? data.filter((todo) => stringToSlug(todo.name).includes(stringToSlug(filterName)))
+      : data;
+
+    cloneData = cloneData.filter((todo) => {
+      if (Number(filterStatus) === 0) return todo;
+      return Number(todo.statusValue) === Number(filterStatus);
+    });
+    handleUpdateData(cloneData);
+  };
+
+  const debounceSearchName = useCallback(
+    _.debounce((nextFilter, myData) => filterTodoChange(nextFilter, myData), 700),
+    []
+  );
+
   const handleFilterTodoChange = (e) => {
     const {name, value} = e.target;
 
@@ -28,34 +50,21 @@ function TodoTableList(props) {
       ...filter,
       [name]: value,
     });
+    debounceSearchName(
+      {
+        ...filter,
+        [name]: value,
+      },
+      data
+    );
   };
 
-  let selectData = [...data];
-
-  const {filterName, filterStatus} = filter;
-
-  const filterTodoChange = () => {
-    if (filterName) {
-      selectData = filterName
-        ? selectData.filter((todo) =>
-            stringToSlug(todo.name).includes(stringToSlug(filterName))
-          )
-        : selectData;
-    }
-
-    selectData = selectData.filter((todo) => {
-      if (Number(filterStatus) === 0) return todo;
-      return Number(todo.statusValue) === Number(filterStatus);
-    });
-  };
-
-  filterTodoChange();
-
+  // data = [...selectData];
   const myData = keySearchValue
-    ? selectData.filter((todo) =>
+    ? data.filter((todo) =>
         stringToSlug(todo.name).includes(stringToSlug(keySearchValue))
       )
-    : selectData;
+    : data;
 
   return (
     <div className="todo-table">
@@ -120,6 +129,7 @@ TodoTableList.propTypes = {
   handleDeleteTodo: PropTypes.func,
   handleChangeStatusTodo: PropTypes.func,
   handleSetToast: PropTypes.func,
+  handleUpdateData: PropTypes.func,
   onFormClose: PropTypes.func,
   keySearchValue: PropTypes.string,
 };
@@ -131,6 +141,7 @@ TodoTableList.defaultProps = {
   handleChangeStatusTodo: null,
   handleSetToast: null,
   onFormClose: null,
+  handleUpdateData: null,
   keySearchValue: "",
 };
 

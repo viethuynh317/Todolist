@@ -8,7 +8,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import PropTypes from "prop-types";
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 const theme = createMuiTheme({
   status: {
@@ -38,7 +38,7 @@ const TodoListItem = (props) => {
   const classes = useStyles();
 
   const {name, statusValue} = todo;
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -85,7 +85,7 @@ const TodoListItem = (props) => {
   const handleChangeStatusClick = () => {
     handleChangeStatusTodo({
       ...todo,
-      statusValue: statusValue === 1 ? -1 : 1,
+      statusValue: Number(statusValue) === 1 ? -1 : 1,
     });
     handleSetToast({
       isOpen: true,

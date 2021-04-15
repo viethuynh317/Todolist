@@ -9,7 +9,10 @@ import Toastify from "../../commons/components/Toastify";
 const initialData = [];
 
 const Todo = () => {
-  const [data, setData] = useState([]);
+  const jsonData = JSON.parse(localStorage.getItem("data"));
+  const localStorageData = jsonData || initialData;
+
+  const [data, setData] = useState(localStorageData);
 
   const [isActionTodo, setIsActionTodo] = useState(0);
   const [currentTodo, setCurrentTodo] = useState({});
@@ -31,15 +34,13 @@ const Todo = () => {
   const [statusSort, setStatusSort] = useState(0);
 
   useEffect(() => {
-    const jsonData = JSON.parse(localStorage.getItem("data"));
-    const localStorageData = jsonData || initialData;
     let defaultSortData;
     switch (statusSort) {
       case 0:
-        defaultSortData = localStorageData.sort((a, b) => (a.name > b.name ? 1 : -1));
+        defaultSortData = data.sort((a, b) => (a.name > b.name ? 1 : -1));
         break;
       case 1:
-        defaultSortData = localStorageData.sort((a, b) => (a.name < b.name ? 1 : -1));
+        defaultSortData = data.sort((a, b) => (a.name < b.name ? 1 : -1));
         break;
       case 2: {
         const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
@@ -60,16 +61,24 @@ const Todo = () => {
       }
 
       default:
-        defaultSortData = localStorageData;
+        defaultSortData = data;
     }
 
     setData(defaultSortData);
   }, [actionDependency]);
 
+  const handleUpdateData = (newData) => {
+    setData(newData);
+  };
+
   const handleAddTodo = (newData) => {
     localStorage.setItem("data", JSON.stringify(newData));
     setData(newData);
     setActionDependency(!actionDependency);
+  };
+
+  const setDataFromFilter = (newData) => {
+    setData(newData);
   };
 
   const handleUpdateTodo = (newData) => {
@@ -176,6 +185,8 @@ const Todo = () => {
             keySearchValue={keySearchValue}
             handleDeleteTodo={handleDeleteTodo}
             handleChangeStatusTodo={handleChangeStatusTodo}
+            handleUpdateData={handleUpdateData}
+            setDataFromFilter={setDataFromFilter}
             handleSetToast={handleSetToast}
             onFormClose={handleFormClose}
           />
