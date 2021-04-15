@@ -69,7 +69,13 @@ td .hidden-status:hover span {
 }
 
 @media screen and (max-width: 786px) {
-  td .form-btn.form-btn-respon {
+  td .form-btn.form-btn-respon .btn {
+    padding: 4px 10px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  td .form-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,8 +83,19 @@ td .hidden-status:hover span {
     margin: 0;
   }
 
-  td .form-btn.form-btn-respon .btn {
-    padding: 4px 10px;
-    margin-bottom: 0.3rem;
+  table {
+    width: 420px;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  table {
+    width: 375px;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  table {
+    width: 358px;
   }
 }

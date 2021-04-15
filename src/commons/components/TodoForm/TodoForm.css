@@ -1,6 +1,3 @@
-.action-form {
-}
-
 .action-form__header {
   border: 1px solid #f5dfb4;
   display: flex;
@@ -57,24 +54,24 @@
   align-items: center;
 }
 
-@media screen and (max-width: 786px) {
-  .form-btn-left {
-    flex-direction: column;
-    align-items: center;
+@media screen and (max-width: 780px) {
+  .left-form {
+    width: 100%;
+  }
+
+  .action-form {
+    margin: 0 auto 2rem;
+    width: 70%;
   }
 
   .form-btn-left button {
     justify-content: center;
     margin-bottom: 0.3rem;
   }
-
-  .btn-primary-res {
-    padding: 6px 7px;
-  }
 }
 
-@media screen and (max-width: 460px) {
-  .btn {
-    font-size: 0.7rem;
+@media screen and (max-width: 780px) {
+  .form-wrap {
+    grid-template-columns: 100%;
   }
 }
