@@ -90,12 +90,12 @@ td .hidden-status:hover span {
 
 @media screen and (max-width: 420px) {
   table {
-    width: 375px;
+    width: 410px;
   }
 }
 
 @media screen and (max-width: 375px) {
   table {
-    width: 358px;
+    width: 375px;
   }
 }

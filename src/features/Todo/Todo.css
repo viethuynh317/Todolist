@@ -34,6 +34,12 @@
 
 @media only screen and (max-width: 780px) {
   .form-wrap {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  .container {
+    width: 100%;
   }
 }
