@@ -6,10 +6,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import React, {useEffect, useState} from "react";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {useForm} from "react-hook-form";
+import * as yup from "yup";
 import "./TodoForm.css";
 import PropTypes from "prop-types";
 import {v4 as uuidv4} from "uuid";
 import stringToSlug from "../../../constants/slugify";
+
+const schema = yup.object().shape({
+  name: yup.string().required("Tên là bắt buộc"),
+});
 
 const TodoForm = (props) => {
   const {
@@ -23,12 +30,16 @@ const TodoForm = (props) => {
     todo,
   } = props;
 
-  const [todoName, setTodoName] = useState("");
+  const {register, handleSubmit, errors} = useForm({
+    mode: "all",
+    resolver: yupResolver(schema),
+  });
 
+  const [todoName, setTodoName] = useState("");
   const [statusValue, setStatusValue] = useState(-1);
 
   useEffect(() => {
-    setTodoName(todo.name || "");
+    setTodoName(todo.name);
     setStatusValue(todo.statusValue || -1);
   }, [todo]);
 
@@ -36,16 +47,16 @@ const TodoForm = (props) => {
     onFormCloseChild(0);
   };
 
-  const handleAddTodoClick = () => {
+  const handleAddTodoClick = (myData) => {
     const dataLocal = JSON.parse(localStorage.getItem("data")) || [];
     const cloneData = [...dataLocal];
     const isName = cloneData.some(
-      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(todoName)
+      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(myData.name)
     );
     if (!isName) {
       const newTodo = {
         id: uuidv4(),
-        name: todoName,
+        name: myData.name,
         statusValue,
       };
       cloneData.push(newTodo);
@@ -55,11 +66,10 @@ const TodoForm = (props) => {
         message: `Tạo mới công việc thành công`,
         isOpen: true,
       });
-      setTodoName("");
     } else {
       handleSetToast({
         type: "error",
-        message: `Công việc ${todoName} đã tồn tại`,
+        message: `Công việc ${myData.name} đã tồn tại`,
         isOpen: true,
       });
     }
@@ -67,13 +77,14 @@ const TodoForm = (props) => {
     onFormCloseChild(0);
   };
 
-  const handleUpdateTodoClick = () => {
+  const handleUpdateTodoClick = (myData) => {
+    setTodoName(myData.name);
     const isName = data.some(
-      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(todoName)
+      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(myData.name)
     );
 
     const prevTodo = data.find(
-      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(todoName)
+      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(myData.name)
     );
 
     const isStatus = prevTodo
@@ -85,7 +96,7 @@ const TodoForm = (props) => {
         if (itemTodo.id === todo.id)
           return {
             ...itemTodo,
-            name: todoName,
+            name: myData.name,
             statusValue,
           };
         return itemTodo;
@@ -93,14 +104,13 @@ const TodoForm = (props) => {
       handleUpdateTodo(cloneData);
       handleSetToast({
         type: "success",
-        message: `Cập nhật công việc ${todoName} thành công`,
+        message: `Cập nhật công việc ${myData.name} thành công`,
         isOpen: true,
       });
-      setTodoName("");
     } else {
       handleSetToast({
         type: "error",
-        message: `Công việc ${todoName} đã tồn tại`,
+        message: `Công việc ${myData.name} đã tồn tại`,
         isOpen: true,
       });
     }
@@ -109,7 +119,6 @@ const TodoForm = (props) => {
   };
 
   const handleTodoNameChange = (e) => {
-    // e.target.value = todoName;
     setTodoName(e.target.value);
   };
 
@@ -124,16 +133,18 @@ const TodoForm = (props) => {
         <FontAwesomeIcon icon={faTimesCircle} onClick={handleCloseFormClick} />
       </div>
       <div className="action-form__form">
-        <div className="form-group">
+        <div className={errors.name ? "form-group form-errors" : "form-group"}>
           <label htmlFor="todoName">Tên</label>
           <input
             id="todoName"
             type="text"
+            name="name"
             className="form-control form-name"
-            value={todoName}
-            placeholder={todo.name}
+            placeholder={todoName}
             onChange={handleTodoNameChange}
+            ref={register}
           />
+          {errors.name?.message && <span>{errors.name?.message}</span>}
         </div>
 
         <div className="form-group">
@@ -155,7 +166,7 @@ const TodoForm = (props) => {
             <button
               type="button"
               className="btn btn-primary btn-primary-res"
-              onClick={handleAddTodoClick}
+              onClick={handleSubmit(handleAddTodoClick)}
             >
               <FontAwesomeIcon icon={faPlus} />
               <span>Tạo mới</span>
@@ -164,7 +175,7 @@ const TodoForm = (props) => {
             <button
               type="button"
               className="btn btn-warning"
-              onClick={handleUpdateTodoClick}
+              onClick={handleSubmit(handleUpdateTodoClick)}
             >
               <FontAwesomeIcon icon={faPencilAlt} />
               <span>Lưu lại</span>
