@@ -3,9 +3,9 @@ const stringToSlug = (str) => {
 
   // remove accents, swap ñ for n, etc
   const from =
-    "ẫẩậầấặẳẵằắăãảạàáäâèẽéẹẻëêểềếệìíịỉĩïîòọóỏõöôộôốổỗơớờợởỡùúụủưứừựửữũüûñçđýỳỷỵỹ·/_,:;";
+    "ẫẩậầấặẳẵằắăãảạàáäâèẽéẹẻëêểềếệìíịỉĩïîòọóỏõöôộôốổỗơớờợởỡùúụủưứừựửữũüûñçđýỳỷỵỹ·/_,:;QWERTYUIOPASDFGHJKLZXCVBNM";
   const to =
-    "aaaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiiioooooooooooooooooouuuuuuuuuuuuuncdyyyỵy------";
+    "aaaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiiioooooooooooooooooouuuuuuuuuuuuuncdyyyỵy------qwertyuiopasdfghjklzxcvbnm";
   for (let i = 0; i < from.length; i += 1) {
     newStr = newStr.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
   }
