@@ -9,6 +9,14 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import PropTypes from "prop-types";
 import React, {useEffect, useRef} from "react";
+import {connect} from "react-redux";
+import {
+  setToastAction,
+  deleteTodo,
+  actionAddOrEditClick,
+  changeStatusTodo,
+  deleteOrUpdateTodo,
+} from "../../../../actions/todoActions";
 
 const theme = createMuiTheme({
   status: {
@@ -25,14 +33,14 @@ const useStyles = makeStyles(() => ({
 
 const TodoListItem = (props) => {
   const {
-    onEditClick,
-    preValueForm,
     todo,
     numericalOrder,
-    handleDeleteTodo,
-    handleChangeStatusTodo,
-    handleFormClose,
-    handleSetToast,
+    dispatchToastAction,
+    dispatchDeleteTodo,
+    dispatchHiddenAction,
+    dispatchChangeStatus,
+    dispatchUpdateTodo,
+    isActionTodo,
   } = props;
 
   const classes = useStyles();
@@ -55,39 +63,28 @@ const TodoListItem = (props) => {
   });
 
   const handleEditClick = (editTodo) => {
-    if (preValueForm === 1)
-      onEditClick({
-        todo: editTodo,
-        value: 2,
-      });
-    else if (preValueForm === 0)
-      onEditClick({
-        todo: editTodo,
-        value: 2,
-      });
-    else
-      onEditClick({
-        todo: editTodo,
-        value: 2,
-      });
+    dispatchUpdateTodo(editTodo);
+    if (!isActionTodo || isActionTodo === 1) {
+      dispatchHiddenAction(2);
+    }
   };
 
-  const handleDeleteClick = (deleteTodo) => {
-    handleDeleteTodo(deleteTodo);
-    handleSetToast({
+  const handleDeleteClick = (myTodo) => {
+    dispatchDeleteTodo(myTodo);
+    dispatchToastAction({
       isOpen: true,
       message: `Xóa công việc ${todo.name} thành công`,
       type: "success",
     });
-    handleFormClose(0);
+    dispatchHiddenAction(0);
   };
 
   const handleChangeStatusClick = () => {
-    handleChangeStatusTodo({
+    dispatchChangeStatus({
       ...todo,
       statusValue: statusValue === 1 ? -1 : 1,
     });
-    handleSetToast({
+    dispatchToastAction({
       isOpen: true,
       message: `Thay đổi trạng thái ${todo.name} thành công`,
       type: "success",
@@ -121,7 +118,7 @@ const TodoListItem = (props) => {
         <td>
           <div
             className={
-              preValueForm ? "form-group form-btn form-btn-respon" : "form-group form-btn"
+              isActionTodo ? "form-group form-btn form-btn-respon" : "form-group form-btn"
             }
           >
             <button
@@ -174,23 +171,45 @@ const TodoListItem = (props) => {
 };
 
 TodoListItem.propTypes = {
-  onEditClick: PropTypes.func,
-  handleDeleteTodo: PropTypes.func,
-  handleChangeStatusTodo: PropTypes.func,
-  handleFormClose: PropTypes.func,
-  handleSetToast: PropTypes.func,
-  preValueForm: PropTypes.number.isRequired,
+  todo: PropTypes.instanceOf(Object).isRequired,
   numericalOrder: PropTypes.number.isRequired,
-  todo: PropTypes.instanceOf(Object),
+  dispatchToastAction: PropTypes.func,
+  dispatchDeleteTodo: PropTypes.func,
+  dispatchHiddenAction: PropTypes.func,
+  dispatchChangeStatus: PropTypes.func,
+  dispatchUpdateTodo: PropTypes.func,
+  isActionTodo: PropTypes.number,
 };
 
 TodoListItem.defaultProps = {
-  todo: {},
-  onEditClick: null,
-  handleDeleteTodo: null,
-  handleChangeStatusTodo: null,
-  handleFormClose: null,
-  handleSetToast: null,
+  dispatchToastAction: null,
+  dispatchDeleteTodo: null,
+  dispatchHiddenAction: null,
+  dispatchChangeStatus: null,
+  dispatchUpdateTodo: null,
+  isActionTodo: 0,
 };
 
-export default TodoListItem;
+const mapStateToProps = (state) => ({
+  isActionTodo: state.todos.isActionTodo,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchToastAction(toast) {
+    dispatch(setToastAction(toast));
+  },
+  dispatchDeleteTodo(todo) {
+    dispatch(deleteTodo(todo));
+  },
+  dispatchHiddenAction(number) {
+    dispatch(actionAddOrEditClick(number));
+  },
+  dispatchChangeStatus(todo) {
+    dispatch(changeStatusTodo(todo));
+  },
+  dispatchUpdateTodo(todo) {
+    dispatch(deleteOrUpdateTodo(todo));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoListItem);

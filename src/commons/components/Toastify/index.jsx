@@ -2,6 +2,8 @@ import React, {createRef} from "react";
 import Proptypes from "prop-types";
 import {Snackbar, makeStyles} from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
+import {connect} from "react-redux";
+import {setToastAction} from "../../../actions/todoActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -9,8 +11,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Toastify(props) {
-  const {notify, setNotify} = props;
+const Toastify = (props) => {
+  const {toast: notify, dispatchToastAction} = props;
   const classes = useStyles();
 
   const wrapper = createRef();
@@ -18,7 +20,7 @@ export default function Toastify(props) {
     if (reason === "clickaway") {
       return;
     }
-    setNotify({
+    dispatchToastAction({
       ...notify,
       isOpen: false,
     });
@@ -38,9 +40,21 @@ export default function Toastify(props) {
       </Alert>
     </Snackbar>
   );
-}
+};
 
 Toastify.propTypes = {
-  notify: Proptypes.instanceOf(Object).isRequired,
-  setNotify: Proptypes.func.isRequired,
+  toast: Proptypes.instanceOf(Object).isRequired,
+  dispatchToastAction: Proptypes.func.isRequired,
 };
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchToastAction(toast) {
+    dispatch(setToastAction(toast));
+  },
+});
+
+const mapStateToProps = (state) => ({
+  toast: state.todos.toast,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Toastify);
