@@ -9,19 +9,26 @@ import {
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, {useState} from "react";
+import {connect} from "react-redux";
+import {
+  actionAddOrEditClick,
+  changeNumberSort,
+  deleteOrUpdateTodo,
+  searchTodo,
+} from "../../../../actions/todoActions";
 import "./TodoHeader.css";
 
 const TodoHeaderAction = (props) => {
   const {
-    onAddClick,
-    preValueForm,
-    data,
-    handleSearchTodoClick,
-    handleSortTodo,
-    setStatusSortTodo,
+    // todos: data,
+    isActionTodo,
+    dispatchAddOrEditClick,
+    dispatchSearchTodo,
+    dispatchNumberCheckSort,
+    dispatchClearTodo,
   } = props;
   const [isShowSortList, setIsShowSortList] = useState(false);
-
+  // console.log(data);
   const [searchValue, setSearchValue] = useState("");
 
   const handleShowSortList = () => {
@@ -35,57 +42,41 @@ const TodoHeaderAction = (props) => {
   };
 
   const handleSearchClick = () => {
-    handleSearchTodoClick(searchValue);
+    dispatchSearchTodo(searchValue);
   };
 
   const handleActiveCheck = (number) => {
-    setStatusSortTodo(number);
+    dispatchNumberCheckSort(number);
     setActiveCheck(number);
     setIsShowSortList(!isShowSortList);
   };
 
   const handleSortAlphaDown = () => {
-    const cloneData = [...data];
-    const newData = cloneData.sort((a, b) => (a.name > b.name ? 1 : -1));
-
-    handleSortTodo(newData);
     handleActiveCheck(0);
   };
 
   const handleSortAlphaUp = () => {
-    const cloneData = [...data];
-    const newData = cloneData.sort((a, b) => (a.name < b.name ? 1 : -1));
-
-    handleSortTodo(newData);
     handleActiveCheck(1);
   };
 
   const handleSortTrigger = () => {
-    const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
-
-    const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
-
-    const newData = filterTodoTrigger.concat(filterTodoHidden);
-
-    handleSortTodo(newData);
     handleActiveCheck(2);
   };
 
   const handleSortHidden = () => {
-    const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
-
-    const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
-
-    const newData = filterTodoHidden.concat(filterTodoTrigger);
-
-    handleSortTodo(newData);
     handleActiveCheck(3);
   };
 
   const handleAddClick = () => {
-    if (preValueForm === 2) onAddClick(1);
-    else if (preValueForm === 0) onAddClick(1);
-    else onAddClick(0);
+    dispatchClearTodo({
+      name: "",
+      statusValue: -1,
+    });
+    if (!isActionTodo || isActionTodo === 2) {
+      dispatchAddOrEditClick(1);
+      return;
+    }
+    dispatchAddOrEditClick(0);
   };
 
   return (
@@ -181,20 +172,41 @@ const TodoHeaderAction = (props) => {
 };
 
 TodoHeaderAction.propTypes = {
-  onAddClick: PropTypes.func,
-  handleSearchTodoClick: PropTypes.func,
-  handleSortTodo: PropTypes.func,
-  setStatusSortTodo: PropTypes.func,
-  preValueForm: PropTypes.number.isRequired,
-  data: PropTypes.instanceOf(Array),
+  // todos: PropTypes.instanceOf(Array),
+  isActionTodo: PropTypes.number,
+  dispatchAddOrEditClick: PropTypes.func,
+  dispatchSearchTodo: PropTypes.func,
+  dispatchNumberCheckSort: PropTypes.func,
+  dispatchClearTodo: PropTypes.func,
 };
 
 TodoHeaderAction.defaultProps = {
-  data: [],
-  onAddClick: null,
-  handleSearchTodoClick: null,
-  handleSortTodo: null,
-  setStatusSortTodo: null,
+  // todos: [],
+  isActionTodo: 0,
+  dispatchAddOrEditClick: null,
+  dispatchSearchTodo: null,
+  dispatchNumberCheckSort: null,
+  dispatchClearTodo: null,
 };
 
-export default TodoHeaderAction;
+const mapStateToProps = (state) => ({
+  todos: state.todos.todos,
+  isActionTodo: state.todos.isActionTodo,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchAddOrEditClick(number) {
+    dispatch(actionAddOrEditClick(number));
+  },
+  dispatchSearchTodo(searchValue) {
+    dispatch(searchTodo(searchValue));
+  },
+  dispatchNumberCheckSort(number) {
+    dispatch(changeNumberSort(number));
+  },
+  dispatchClearTodo(todo) {
+    dispatch(deleteOrUpdateTodo(todo));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoHeaderAction);

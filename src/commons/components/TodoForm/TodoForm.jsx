@@ -5,14 +5,21 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import React, {useEffect, useState} from "react";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {useForm} from "react-hook-form";
-import * as yup from "yup";
-import "./TodoForm.css";
 import PropTypes from "prop-types";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {connect} from "react-redux";
 import {v4 as uuidv4} from "uuid";
+import * as yup from "yup";
+import {
+  actionAddOrEditClick,
+  addTodo,
+  setToastAction,
+  updateTodo,
+} from "../../../actions/todoActions";
 import stringToSlug from "../../../constants/slugify";
+import "./TodoForm.css";
 
 const schema = yup.object().shape({
   name: yup.string().required("Tên là bắt buộc"),
@@ -20,14 +27,14 @@ const schema = yup.object().shape({
 
 const TodoForm = (props) => {
   const {
-    title,
-    isAddTodo,
-    onFormCloseChild,
-    data,
-    handleUpdateTodo,
-    handleAddTodo,
-    handleSetToast,
+    todos: data,
     todo,
+    dispatchAddTodo,
+    dispatchUpdateTodo,
+    dispatchToastAction,
+    dispatchActionHiddenClick,
+    isAddTodo,
+    title,
   } = props;
 
   const {register, handleSubmit, errors} = useForm({
@@ -44,13 +51,11 @@ const TodoForm = (props) => {
   }, [todo]);
 
   const handleCloseFormClick = () => {
-    onFormCloseChild(0);
+    dispatchActionHiddenClick(0);
   };
 
   const handleAddTodoClick = (myData) => {
-    const dataLocal = JSON.parse(localStorage.getItem("data")) || [];
-    const cloneData = [...dataLocal];
-    const isName = cloneData.some(
+    const isName = data.some(
       (todoItem) => stringToSlug(todoItem.name) === stringToSlug(myData.name)
     );
     if (!isName) {
@@ -59,22 +64,21 @@ const TodoForm = (props) => {
         name: myData.name,
         statusValue,
       };
-      cloneData.push(newTodo);
-      handleAddTodo(cloneData);
-      handleSetToast({
+      dispatchAddTodo(newTodo);
+      dispatchToastAction({
         type: "success",
         message: `Tạo mới công việc thành công`,
         isOpen: true,
       });
     } else {
-      handleSetToast({
+      dispatchToastAction({
         type: "error",
         message: `Công việc ${myData.name} đã tồn tại`,
         isOpen: true,
       });
     }
 
-    onFormCloseChild(0);
+    dispatchActionHiddenClick(0);
   };
 
   const handleUpdateTodoClick = (myData) => {
@@ -83,39 +87,26 @@ const TodoForm = (props) => {
       (todoItem) => stringToSlug(todoItem.name) === stringToSlug(myData.name)
     );
 
-    const prevTodo = data.find(
-      (todoItem) => stringToSlug(todoItem.name) === stringToSlug(myData.name)
-    );
-
-    const isStatus = prevTodo
-      ? Number(statusValue) === Number(prevTodo.statusValue)
-      : true;
-
-    if (!isStatus || !isName) {
-      const cloneData = data.map((itemTodo) => {
-        if (itemTodo.id === todo.id)
-          return {
-            ...itemTodo,
-            name: myData.name,
-            statusValue,
-          };
-        return itemTodo;
+    if (!isName) {
+      dispatchUpdateTodo({
+        ...todo,
+        name: myData.name,
+        statusValue,
       });
-      handleUpdateTodo(cloneData);
-      handleSetToast({
+      dispatchToastAction({
         type: "success",
         message: `Cập nhật công việc ${myData.name} thành công`,
         isOpen: true,
       });
     } else {
-      handleSetToast({
+      dispatchToastAction({
         type: "error",
         message: `Công việc ${myData.name} đã tồn tại`,
         isOpen: true,
       });
     }
 
-    onFormCloseChild(0);
+    dispatchActionHiddenClick(0);
   };
 
   const handleTodoNameChange = (e) => {
@@ -140,7 +131,7 @@ const TodoForm = (props) => {
             type="text"
             name="name"
             className="form-control form-name"
-            placeholder={todoName}
+            value={todoName}
             onChange={handleTodoNameChange}
             ref={register}
           />
@@ -192,23 +183,43 @@ const TodoForm = (props) => {
 };
 
 TodoForm.propTypes = {
+  todos: PropTypes.instanceOf(Array),
+  todo: PropTypes.instanceOf(Object),
+  dispatchAddTodo: PropTypes.func,
+  dispatchUpdateTodo: PropTypes.func,
+  dispatchToastAction: PropTypes.func,
   title: PropTypes.string.isRequired,
   isAddTodo: PropTypes.bool.isRequired,
-  onFormCloseChild: PropTypes.func,
-  handleUpdateTodo: PropTypes.func,
-  handleAddTodo: PropTypes.func,
-  handleSetToast: PropTypes.func,
-  data: PropTypes.instanceOf(Array),
-  todo: PropTypes.instanceOf(Object),
+  dispatchActionHiddenClick: PropTypes.func,
 };
 
 TodoForm.defaultProps = {
-  data: [],
+  todos: [],
   todo: {},
-  handleAddTodo: null,
-  handleUpdateTodo: null,
-  onFormCloseChild: null,
-  handleSetToast: null,
+  dispatchAddTodo: null,
+  dispatchUpdateTodo: null,
+  dispatchToastAction: null,
+  dispatchActionHiddenClick: null,
 };
 
-export default TodoForm;
+const mapStateToProps = (state) => ({
+  todos: state.todos.todos,
+  todo: state.actionTodos.todo,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchAddTodo(todo) {
+    dispatch(addTodo(todo));
+  },
+  dispatchUpdateTodo(todo) {
+    dispatch(updateTodo(todo));
+  },
+  dispatchToastAction(toast) {
+    dispatch(setToastAction(toast));
+  },
+  dispatchActionHiddenClick(number) {
+    dispatch(actionAddOrEditClick(number));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoForm);

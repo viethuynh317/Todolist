@@ -1,151 +1,51 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
+import {connect} from "react-redux";
+import Proptypes from "prop-types";
 import TodoCreateForm from "./components/TodoCreateForm/TodoCreateForm";
 import TodoEditForm from "./components/TodoEditForm/TodoEditForm";
 import TodoHeaderAction from "./components/TodoHeaderAction/TodoHeaderAction";
 import TodoTableList from "./components/TodoTableList/TodoTableList";
 import "./Todo.css";
 import Toastify from "../../commons/components/Toastify";
+import {
+  sortTodoDown,
+  sortTodoHidden,
+  sortTodoTrigger,
+  sortTodoUp,
+} from "../../actions/todoActions";
 
-const initialData = [];
-
-const Todo = () => {
-  const [data, setData] = useState([]);
-
-  const [isActionTodo, setIsActionTodo] = useState(0);
-  const [currentTodo, setCurrentTodo] = useState({});
-
-  const [toast, setToast] = useState({
-    type: "",
-    message: "",
-    isOpen: false,
-  });
-
-  const handleSetToast = (toastAlert) => {
-    setToast(toastAlert);
-  };
-
-  const [keySearchValue, setKeySearchValue] = useState("");
-
-  const [actionDependency, setActionDependency] = useState(false);
-
-  const [statusSort, setStatusSort] = useState(0);
+const Todo = (props) => {
+  const {
+    dispatchSortTodoDown,
+    dispatchSortTodoUp,
+    dispatchSortTodoHidden,
+    dispatchSortTodoTrigger,
+    isActionTodo,
+    numberCheckSort,
+  } = props;
 
   useEffect(() => {
-    const jsonData = JSON.parse(localStorage.getItem("data"));
-    const localStorageData = jsonData || initialData;
-    let defaultSortData;
-    switch (statusSort) {
+    switch (numberCheckSort) {
       case 0:
-        defaultSortData = localStorageData.sort((a, b) => (a.name > b.name ? 1 : -1));
+        dispatchSortTodoDown();
         break;
       case 1:
-        defaultSortData = localStorageData.sort((a, b) => (a.name < b.name ? 1 : -1));
+        dispatchSortTodoUp();
         break;
       case 2: {
-        const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
-
-        const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
-
-        defaultSortData = filterTodoTrigger.concat(filterTodoHidden);
+        dispatchSortTodoTrigger();
         break;
       }
-
       case 3: {
-        const filterTodoTrigger = data.filter((todo) => Number(todo.statusValue) === 1);
-
-        const filterTodoHidden = data.filter((todo) => Number(todo.statusValue) === -1);
-
-        defaultSortData = filterTodoHidden.concat(filterTodoTrigger);
+        dispatchSortTodoHidden();
         break;
       }
-
       default:
-        defaultSortData = localStorageData;
+        dispatchSortTodoDown();
     }
+  }, [numberCheckSort]);
 
-    setData(defaultSortData);
-  }, [actionDependency]);
-
-  const handleAddTodo = (newData) => {
-    localStorage.setItem("data", JSON.stringify(newData));
-    setData(newData);
-    setActionDependency(!actionDependency);
-  };
-
-  const handleUpdateTodo = (newData) => {
-    localStorage.setItem("data", JSON.stringify(newData));
-    setData(newData);
-    setActionDependency(!actionDependency);
-  };
-
-  const handleDeleteTodo = ({id}) => {
-    const newData = data.filter((itemTodo) => itemTodo.id !== id);
-    localStorage.setItem("data", JSON.stringify(newData));
-    setData(newData);
-  };
-
-  const handleAddClick = (value) => {
-    setIsActionTodo(value);
-  };
-
-  const handleEditClick = ({todo, value}) => {
-    setCurrentTodo(todo);
-    setIsActionTodo(value);
-  };
-
-  const handleChangeStatusTodo = (newTodo) => {
-    const newData = data.map((itemTodo) => {
-      if (itemTodo.id === newTodo.id)
-        return {
-          ...itemTodo,
-          statusValue: newTodo.statusValue,
-        };
-      return itemTodo;
-    });
-    localStorage.setItem("data", JSON.stringify(newData));
-    setData(newData);
-    if (isActionTodo === 2 && currentTodo.id === newTodo.id) setCurrentTodo(newTodo);
-
-    setActionDependency(!actionDependency);
-  };
-
-  const handleFormClose = (value) => {
-    setIsActionTodo(value);
-  };
-
-  // Handle logic search todo
-
-  const handleSearchTodoClick = (name) => {
-    setKeySearchValue(name);
-  };
-
-  const handleSortTodo = (newData) => {
-    setData(newData);
-  };
-
-  const setStatusSortTodo = (status) => {
-    setStatusSort(status);
-  };
-
-  // Handle logic search todo
-
-  const renderAction = (value) =>
-    value === 2 ? (
-      <TodoEditForm
-        onFormClose={handleFormClose}
-        handleUpdateTodo={handleUpdateTodo}
-        handleSetToast={handleSetToast}
-        data={data}
-        todo={currentTodo}
-      />
-    ) : (
-      <TodoCreateForm
-        onFormClose={handleFormClose}
-        handleAddTodo={handleAddTodo}
-        handleSetToast={handleSetToast}
-        data={data}
-      />
-    );
+  const renderAction = (value) => (value === 2 ? <TodoEditForm /> : <TodoCreateForm />);
 
   return (
     <div className="container">
@@ -160,32 +60,53 @@ const Todo = () => {
           ""
         )}
         <div className="right-form">
-          <TodoHeaderAction
-            preValueForm={isActionTodo}
-            onAddClick={handleAddClick}
-            handleSearchTodoClick={handleSearchTodoClick}
-            handleSortTodo={handleSortTodo}
-            setStatusSortTodo={setStatusSortTodo}
-            data={data}
-          />
+          <TodoHeaderAction />
 
-          <TodoTableList
-            preValueForm={isActionTodo}
-            onEditClick={handleEditClick}
-            data={data}
-            keySearchValue={keySearchValue}
-            handleDeleteTodo={handleDeleteTodo}
-            handleChangeStatusTodo={handleChangeStatusTodo}
-            handleSetToast={handleSetToast}
-            onFormClose={handleFormClose}
-          />
+          <TodoTableList />
         </div>
       </div>
-      <Toastify notify={toast} setNotify={setToast} />
+      <Toastify />
     </div>
   );
 };
 
-Todo.propTypes = {};
+Todo.propTypes = {
+  isActionTodo: Proptypes.number,
+  numberCheckSort: Proptypes.number,
+  dispatchSortTodoDown: Proptypes.func,
+  dispatchSortTodoUp: Proptypes.func,
+  dispatchSortTodoHidden: Proptypes.func,
+  dispatchSortTodoTrigger: Proptypes.func,
+};
 
-export default Todo;
+Todo.defaultProps = {
+  isActionTodo: 0,
+  numberCheckSort: 0,
+  dispatchSortTodoDown: null,
+  dispatchSortTodoUp: null,
+  dispatchSortTodoHidden: null,
+  dispatchSortTodoTrigger: null,
+};
+
+const mapStateToProps = (state) => ({
+  todos: state.todos.todos,
+  isActionTodo: state.todos.isActionTodo,
+  numberCheckSort: state.actionTodos.numberCheckSort,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchSortTodoDown() {
+    dispatch(sortTodoDown());
+  },
+  dispatchSortTodoUp() {
+    dispatch(sortTodoUp());
+  },
+  dispatchSortTodoHidden() {
+    dispatch(sortTodoHidden());
+  },
+  dispatchSortTodoTrigger() {
+    dispatch(sortTodoTrigger());
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Todo);
