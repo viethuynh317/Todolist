@@ -1,13 +1,9 @@
 import React from "react";
-import TodoForm from "../../../../commons/components/TodoForm/TodoForm";
 import TodoHeaderAction from "../TodoHeaderAction/TodoHeaderAction";
 import TodoTableList from "../TodoTableList/TodoTableList";
 
-const TodoCreateForm = () => (
-  <div className="form-wrap ">
-    <div className="left-form">
-      <TodoForm title="Thêm Công Việc" isAddTodo />
-    </div>
+const TodoRightForm = () => (
+  <div className="form-wrap hidden-form">
     <div className="right-form">
       <TodoHeaderAction />
       <TodoTableList />
@@ -15,4 +11,4 @@ const TodoCreateForm = () => (
   </div>
 );
 
-export default TodoCreateForm;
+export default TodoRightForm;

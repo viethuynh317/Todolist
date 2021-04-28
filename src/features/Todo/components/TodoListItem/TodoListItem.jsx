@@ -10,12 +10,13 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import PropTypes from "prop-types";
 import React, {useEffect, useRef} from "react";
 import {connect} from "react-redux";
+import {NavLink} from "react-router-dom";
 import {
-  setToastAction,
-  deleteTodo,
   actionAddOrEditClick,
   changeStatusTodo,
   deleteOrUpdateTodo,
+  deleteTodo,
+  setToastAction,
 } from "../../../../actions/todoActions";
 
 const theme = createMuiTheme({
@@ -121,15 +122,16 @@ const TodoListItem = (props) => {
               isActionTodo ? "form-group form-btn form-btn-respon" : "form-group form-btn"
             }
           >
-            <button
-              type="button"
-              className="btn btn-warning"
-              onClick={() => handleEditClick(todo)}
-            >
-              <FontAwesomeIcon icon={faPencilAlt} />
-              <span>Sửa</span>
-            </button>
-
+            <NavLink style={{textDecoration: "none"}} to="/todos/updateTodo">
+              <button
+                type="button"
+                className="btn btn-warning"
+                onClick={() => handleEditClick(todo)}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} />
+                <span>Sửa</span>
+              </button>
+            </NavLink>
             <button type="button" className="btn btn-danger" onClick={handleClickOpen}>
               <FontAwesomeIcon icon={faTrashAlt} />
               <span>Xóa</span>

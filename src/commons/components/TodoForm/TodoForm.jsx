@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {connect} from "react-redux";
+import {NavLink, useHistory} from "react-router-dom";
 import {v4 as uuidv4} from "uuid";
 import * as yup from "yup";
 import {
@@ -45,6 +46,8 @@ const TodoForm = (props) => {
   const [todoName, setTodoName] = useState("");
   const [statusValue, setStatusValue] = useState(-1);
 
+  const history = useHistory();
+
   useEffect(() => {
     setTodoName(todo.name);
     setStatusValue(todo.statusValue || -1);
@@ -52,6 +55,7 @@ const TodoForm = (props) => {
 
   const handleCloseFormClick = () => {
     dispatchActionHiddenClick(0);
+    history.push("/todos");
   };
 
   const handleAddTodoClick = (myData) => {
@@ -77,7 +81,7 @@ const TodoForm = (props) => {
         isOpen: true,
       });
     }
-
+    history.push("/todos");
     dispatchActionHiddenClick(0);
   };
 
@@ -107,6 +111,7 @@ const TodoForm = (props) => {
     }
 
     dispatchActionHiddenClick(0);
+    history.push("/todos");
   };
 
   const handleTodoNameChange = (e) => {
@@ -172,10 +177,16 @@ const TodoForm = (props) => {
               <span>Lưu lại</span>
             </button>
           )}
-          <button type="button" className="btn btn-danger" onClick={handleCloseFormClick}>
-            <FontAwesomeIcon icon={faTimes} />
-            <span>Hủy bỏ</span>
-          </button>
+          <NavLink style={{textDecoration: "none"}} to="/todos">
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleCloseFormClick}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+              <span>Hủy bỏ</span>
+            </button>
+          </NavLink>
         </div>
       </div>
     </div>

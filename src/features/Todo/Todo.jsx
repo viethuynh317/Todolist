@@ -1,18 +1,15 @@
-import React, {useEffect} from "react";
-import {connect} from "react-redux";
+import {LinearProgress} from "@material-ui/core";
 import Proptypes from "prop-types";
-import TodoCreateForm from "./components/TodoCreateForm/TodoCreateForm";
-import TodoEditForm from "./components/TodoEditForm/TodoEditForm";
-import TodoHeaderAction from "./components/TodoHeaderAction/TodoHeaderAction";
-import TodoTableList from "./components/TodoTableList/TodoTableList";
-import "./Todo.css";
-import Toastify from "../../commons/components/Toastify";
+import React, {Suspense, useEffect} from "react";
+import {connect} from "react-redux";
 import {
   sortTodoDown,
   sortTodoHidden,
   sortTodoTrigger,
   sortTodoUp,
 } from "../../actions/todoActions";
+import Toastify from "../../commons/components/Toastify";
+import "./Todo.css";
 
 const Todo = (props) => {
   const {
@@ -20,7 +17,7 @@ const Todo = (props) => {
     dispatchSortTodoUp,
     dispatchSortTodoHidden,
     dispatchSortTodoTrigger,
-    isActionTodo,
+    children,
     numberCheckSort,
   } = props;
 
@@ -45,33 +42,20 @@ const Todo = (props) => {
     }
   }, [numberCheckSort]);
 
-  const renderAction = (value) => (value === 2 ? <TodoEditForm /> : <TodoCreateForm />);
-
   return (
     <div className="container">
       <div className="todo-header">
         <h1>Quản lý công việc</h1>
       </div>
 
-      <div className={isActionTodo ? "form-wrap" : "form-wrap hidden-form"}>
-        {isActionTodo ? (
-          <div className="left-form">{renderAction(isActionTodo)}</div>
-        ) : (
-          ""
-        )}
-        <div className="right-form">
-          <TodoHeaderAction />
-
-          <TodoTableList />
-        </div>
-      </div>
+      <Suspense fallback={<LinearProgress />}>{children}</Suspense>
       <Toastify />
     </div>
   );
 };
 
 Todo.propTypes = {
-  isActionTodo: Proptypes.number,
+  children: Proptypes.element,
   numberCheckSort: Proptypes.number,
   dispatchSortTodoDown: Proptypes.func,
   dispatchSortTodoUp: Proptypes.func,
@@ -80,7 +64,7 @@ Todo.propTypes = {
 };
 
 Todo.defaultProps = {
-  isActionTodo: 0,
+  children: null,
   numberCheckSort: 0,
   dispatchSortTodoDown: null,
   dispatchSortTodoUp: null,
