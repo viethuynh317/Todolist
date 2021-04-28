@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, {useState} from "react";
 import {connect} from "react-redux";
+import {NavLink, useRouteMatch} from "react-router-dom";
 import {
   actionAddOrEditClick,
   changeNumberSort,
@@ -30,6 +31,9 @@ const TodoHeaderAction = (props) => {
   const [isShowSortList, setIsShowSortList] = useState(false);
   // console.log(data);
   const [searchValue, setSearchValue] = useState("");
+
+  const {url} = useRouteMatch();
+  const changePage = url === "/todos/createTodo";
 
   const handleShowSortList = () => {
     setIsShowSortList(!isShowSortList);
@@ -82,10 +86,12 @@ const TodoHeaderAction = (props) => {
   return (
     <div className="header-action">
       <div className="btn-wrap btn-add">
-        <button className="btn btn-primary" type="button" onClick={handleAddClick}>
-          <FontAwesomeIcon icon={faPlus} />
-          <span>Thêm công việc</span>
-        </button>
+        <NavLink to={changePage ? "/todos" : "/todos/createTodo"}>
+          <button className="btn btn-primary" type="button" onClick={handleAddClick}>
+            <FontAwesomeIcon icon={faPlus} />
+            <span>Thêm công việc</span>
+          </button>
+        </NavLink>
       </div>
       <div className="btn-others">
         <div className="form-search">
