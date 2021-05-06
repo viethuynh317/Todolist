@@ -1,16 +1,26 @@
 import {lazy} from "react";
 
-export const publicRoutes = [];
-
-export const privateRoutes = [
+export const publicRoutes = [
   {
     key: "todos",
     exact: true,
     path: "/todos",
+    destricted: false,
     component: lazy(() =>
       import("../features/Todo/components/TodoRightForm/TodoRightForm")
     ),
   },
+  {
+    key: "signIn",
+    exact: true,
+    destricted: true,
+    login: true,
+    path: "/auth/sign-in",
+    component: lazy(() => import("../features/Auth/SignIn/SignIn")),
+  },
+];
+
+export const privateRoutes = [
   {
     key: "todos-createTodo",
     exact: true,
