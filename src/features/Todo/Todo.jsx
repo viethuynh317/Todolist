@@ -8,6 +8,7 @@ import {
   sortTodoTrigger,
   sortTodoUp,
 } from "../../actions/todoActions";
+import Navbar from "../../commons/components/Navbar/Navbar";
 import Toastify from "../../commons/components/Toastify";
 import "./Todo.css";
 
@@ -44,6 +45,7 @@ const Todo = (props) => {
 
   return (
     <div className="container">
+      <Navbar />
       <div className="todo-header">
         <h1>Quản lý công việc</h1>
       </div>

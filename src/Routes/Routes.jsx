@@ -1,7 +1,8 @@
 import React from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
 import PrivateLayoutRoute from "./LayoutRoutes/PrivateLayoutRoute";
-import {privateRoutes} from "./routeConfig";
+import PublicLayoutRoute from "./LayoutRoutes/PublicLayoutRoute";
+import {privateRoutes, publicRoutes} from "./routeConfig";
 
 const Routes = () => (
   <Switch>
@@ -11,6 +12,17 @@ const Routes = () => (
         <PrivateLayoutRoute key={key} exact={exact} path={path} component={component} />
       );
     })}
+
+    {publicRoutes.map(({key, exact, path, component, destricted, login}) => (
+      <PublicLayoutRoute
+        key={key}
+        exact={exact}
+        path={path}
+        login={login}
+        component={component}
+        destricted={destricted}
+      />
+    ))}
     <Route exact path="/">
       <Redirect to="/todos" />
     </Route>
